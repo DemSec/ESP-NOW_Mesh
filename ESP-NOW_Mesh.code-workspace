@@ -13,24 +13,28 @@
 			"path": "ESP32_DHT"
 		},
 		{
-			"name": "ESP32-NOW_DHT_Master",
-			"path": "ESP32-NOW_DHT_Master"
+			"name": "ESP32_OLED_Demo",
+			"path": "ESP32_OLED_Demo"
 		},
 		{
 			"name": "ESP32-NOW_Master",
 			"path": "ESP32-NOW_Master"
 		},
 		{
-			"name": "ESP32-NOW_OLED_Log_Slave",
-			"path": "ESP32-NOW_OLED_Log_Slave"
+			"name": "ESP32-NOW_Slave",
+			"path": "ESP32-NOW_Slave"
+		},
+		{
+			"name": "ESP32-NOW_Fast_Master",
+			"path": "ESP32-NOW_Fast_Master"
+		},
+		{
+			"name": "ESP32-NOW_DHT_Master",
+			"path": "ESP32-NOW_DHT_Master"
 		},
 		{
 			"name": "ESP32-NOW_UCG_Log_Slave",
 			"path": "ESP32-NOW_UCG_Log_Slave"
-		},
-		{
-			"name": "ESP32_OLED_Demo",
-			"path": "ESP32_OLED_Demo"
 		}
 	],
 	"settings": {

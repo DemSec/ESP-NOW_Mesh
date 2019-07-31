@@ -1,34 +1,3 @@
-/**
-   ESPNOW - Basic communication - Master
-   Date: 26th September 2017
-   Author: Arvind Ravulavaru <https://github.com/arvindr21>
-   Purpose: ESPNow Communication between a Master ESP32 and a Slave ESP32
-   Description: This sketch consists of the code for the Master module.
-   Resources: (A bit outdated)
-   a. https://espressif.com/sites/default/files/documentation/esp-now_user_guide_en.pdf
-   b. http://www.esploradores.com/practica-6-conexion-esp-now/
-
-   << This Device Master >>
-
-   Flow: Master
-   Step 1 : ESPNow Init on Master and set it in STA mode
-   Step 2 : Start scanning for Slave ESP32 (we have added a prefix of `slave` to the SSID of slave for an easy setup)
-   Step 3 : Once found, add Slave as peer
-   Step 4 : Register for send callback
-   Step 5 : Start Transmitting data from Master to Slave
-
-   Flow: Slave
-   Step 1 : ESPNow Init on Slave
-   Step 2 : Update the SSID of Slave with a prefix of `slave`
-   Step 3 : Set Slave in AP mode
-   Step 4 : Register for receive callback and wait for data
-   Step 5 : Once data arrives, print it in the serial monitor
-
-   Note: Master and Slave have been defined to easily understand the setup.
-         Based on the ESPNOW API, there is no concept of Master and Slave.
-         Any devices can act as master or salve.
-*/
-
 #include <esp_now.h>
 #include <WiFi.h>
 
@@ -50,6 +19,26 @@ void InitESPNow() {
     // InitESPNow();
     // or Simply Restart
     ESP.restart();
+  }
+}
+
+void deletePeer() {
+  const esp_now_peer_info_t *peer = &slave;
+  const uint8_t *peer_addr = slave.peer_addr;
+  esp_err_t delStatus = esp_now_del_peer(peer_addr);
+  Serial.print("Slave Delete Status: ");
+  if (delStatus == ESP_OK) {
+    // Delete success
+    Serial.println("Success");
+  } else if (delStatus == ESP_ERR_ESPNOW_NOT_INIT) {
+    // How did we get so far!!
+    Serial.println("ESPNOW Not Init");
+  } else if (delStatus == ESP_ERR_ESPNOW_ARG) {
+    Serial.println("Invalid Argument");
+  } else if (delStatus == ESP_ERR_ESPNOW_NOT_FOUND) {
+    Serial.println("Peer not found.");
+  } else {
+    Serial.println("Not sure what happened");
   }
 }
 
@@ -115,26 +104,6 @@ void ScanForSlave() {
   WiFi.scanDelete();
 }
 
-void deletePeer() {
-  const esp_now_peer_info_t *peer = &slave;
-  const uint8_t *peer_addr = slave.peer_addr;
-  esp_err_t delStatus = esp_now_del_peer(peer_addr);
-  Serial.print("Slave Delete Status: ");
-  if (delStatus == ESP_OK) {
-    // Delete success
-    Serial.println("Success");
-  } else if (delStatus == ESP_ERR_ESPNOW_NOT_INIT) {
-    // How did we get so far!!
-    Serial.println("ESPNOW Not Init");
-  } else if (delStatus == ESP_ERR_ESPNOW_ARG) {
-    Serial.println("Invalid Argument");
-  } else if (delStatus == ESP_ERR_ESPNOW_NOT_FOUND) {
-    Serial.println("Peer not found.");
-  } else {
-    Serial.println("Not sure what happened");
-  }
-}
-
 // Check if the slave is already paired with the master.
 // If not, pair the slave with master
 bool manageSlave() {
@@ -190,43 +159,56 @@ bool manageSlave() {
 uint8_t data = 0;
 // send data
 void sendData() {
+  digitalWrite(4, HIGH);
   data++;
   const uint8_t *peer_addr = slave.peer_addr;
-  Serial.print("Sending: "); Serial.println(data);
-  esp_err_t result = esp_now_send(peer_addr, &data, sizeof(data));
-  Serial.print("Send Status: ");
-  if (result == ESP_OK) {
-    Serial.println("Success");
-  } else if (result == ESP_ERR_ESPNOW_NOT_INIT) {
-    // How did we get so far!!
-    Serial.println("ESPNOW not Init.");
-  } else if (result == ESP_ERR_ESPNOW_ARG) {
-    Serial.println("Invalid Argument");
-  } else if (result == ESP_ERR_ESPNOW_INTERNAL) {
-    Serial.println("Internal Error");
-  } else if (result == ESP_ERR_ESPNOW_NO_MEM) {
-    Serial.println("ESP_ERR_ESPNOW_NO_MEM");
-  } else if (result == ESP_ERR_ESPNOW_NOT_FOUND) {
-    Serial.println("Peer not found.");
-  } else {
-    Serial.println("Not sure what happened");
+  // Serial.print("Sending: "); Serial.println(data);
+
+  uint8_t arrayOfData[250];
+  for (uint8_t i = 0; i < 250; i++) {
+    arrayOfData[i] = data;
   }
+  esp_err_t result = esp_now_send(peer_addr, arrayOfData, sizeof(arrayOfData));
+  
+  // esp_err_t result = esp_now_send(peer_addr, &data, sizeof(data));
+
+  // Serial.print("Send Status: ");
+  // if (result == ESP_OK) {
+  //   Serial.println("Success");
+  // } else if (result == ESP_ERR_ESPNOW_NOT_INIT) {
+  //   // How did we get so far!!
+  //   Serial.println("ESPNOW not Init.");
+  // } else if (result == ESP_ERR_ESPNOW_ARG) {
+  //   Serial.println("Invalid Argument");
+  // } else if (result == ESP_ERR_ESPNOW_INTERNAL) {
+  //   Serial.println("Internal Error");
+  // } else if (result == ESP_ERR_ESPNOW_NO_MEM) {
+  //   Serial.println("ESP_ERR_ESPNOW_NO_MEM");
+  // } else if (result == ESP_ERR_ESPNOW_NOT_FOUND) {
+  //   Serial.println("Peer not found.");
+  // } else {
+  //   Serial.println("Not sure what happened");
+  // }
+  digitalWrite(4, LOW);
 }
 
 // callback when data is sent from Master to Slave
 void OnDataSent(const uint8_t *mac_addr, esp_now_send_status_t status) {
-  char macStr[18];
-  snprintf(macStr, sizeof(macStr), "%02x:%02x:%02x:%02x:%02x:%02x",
-           mac_addr[0], mac_addr[1], mac_addr[2], mac_addr[3], mac_addr[4], mac_addr[5]);
-  Serial.print("Last Packet Sent to: "); Serial.println(macStr);
-  Serial.print("Last Packet Send Status: "); Serial.println(status == ESP_NOW_SEND_SUCCESS ? "Delivery Success" : "Delivery Fail");
+  digitalWrite(16, HIGH);
+  // char macStr[18];
+  // snprintf(macStr, sizeof(macStr), "%02x:%02x:%02x:%02x:%02x:%02x",
+  //          mac_addr[0], mac_addr[1], mac_addr[2], mac_addr[3], mac_addr[4], mac_addr[5]);
+  // Serial.print("Last Packet Sent to: "); Serial.println(macStr);
+  // Serial.print("Last Packet Send Status: "); Serial.println(status == ESP_NOW_SEND_SUCCESS ? "Delivery Success" : "Delivery Fail");
+  digitalWrite(16, LOW);
 }
 
 void setup() {
-  pinMode(4, OUTPUT); digitalWrite(4, LOW);
-  pinMode(16, OUTPUT); digitalWrite(16, LOW);
-  pinMode(19, OUTPUT); digitalWrite(19, LOW);
-  Serial.begin(115200);
+  pinMode(4, OUTPUT);
+  digitalWrite(4, LOW);
+  pinMode(16, OUTPUT);
+  digitalWrite(16, LOW);
+  // Serial.begin(115200);
   //Set device in STA mode to begin with
   WiFi.mode(WIFI_STA);
   Serial.println("ESPNow/Basic/Master Example");
@@ -239,34 +221,24 @@ void setup() {
   esp_now_register_send_cb(OnDataSent);
 }
 
+unsigned long nextTime;
+
 void loop() {
   // In the loop we scan for slave
-  digitalWrite(4, HIGH);
   ScanForSlave();
-  digitalWrite(4, LOW);
   // If Slave is found, it would be populate in `slave` variable
   // We will check if `slave` is defined and then we proceed further
   if (slave.channel == CHANNEL) { // check if slave channel is defined
     // `slave` is defined
     // Add slave as peer if it has not been added already
-    digitalWrite(16, HIGH);
     bool isPaired = manageSlave();
-    digitalWrite(16, LOW);
-    if (isPaired) {
-      // pair success or already paired
-      // Send data to device
-      digitalWrite(19, HIGH);
+    while (isPaired) {
       sendData();
-      digitalWrite(19, LOW);
-    } else {
-      // slave pair failed
-      Serial.println("Slave pair failed!");
+      unsigned long t = millis();
+      if (t > nextTime) {
+        nextTime = t + 1000;
+        isPaired = manageSlave();
+      }
     }
   }
-  else {
-    // No slave found to process
-  }
-
-  // wait for 3seconds to run the logic again
-  // delay(3000);
 }
