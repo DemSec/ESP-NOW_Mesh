@@ -1,0 +1,42 @@
+{
+	"folders": [
+		{
+			"name": "_Old",
+			"path": "_Old"
+		},
+		{
+			"name": "ESP32_Blink",
+			"path": "ESP32_Blink"
+		},
+		{
+			"name": "ESP32_DHT",
+			"path": "ESP32_DHT"
+		},
+		{
+			"name": "ESP32-NOW_DHT_Master",
+			"path": "ESP32-NOW_DHT_Master"
+		},
+		{
+			"name": "ESP32-NOW_Master",
+			"path": "ESP32-NOW_Master"
+		},
+		{
+			"name": "ESP32-NOW_OLED_Log_Slave",
+			"path": "ESP32-NOW_OLED_Log_Slave"
+		},
+		{
+			"name": "ESP32-NOW_UCG_Log_Slave",
+			"path": "ESP32-NOW_UCG_Log_Slave"
+		},
+		{
+			"name": "ESP32_OLED_Demo",
+			"path": "ESP32_OLED_Demo"
+		}
+	],
+	"settings": {
+		"terminal.integrated.env.windows": {
+			"PATH": "C:\\Users\\David\\.platformio\\penv\\Scripts;C:\\Users\\David\\.platformio\\penv;C:\\Program Files (x86)\\Common Files\\Oracle\\Java\\javapath;C:\\WINDOWS\\system32;C:\\WINDOWS;C:\\WINDOWS\\System32\\Wbem;C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\;C:\\WINDOWS\\System32\\OpenSSH\\;C:\\Program Files\\NVIDIA Corporation\\NVIDIA NvDLISR;C:\\Program Files (x86)\\NVIDIA Corporation\\PhysX\\Common;C:\\Users\\David\\AppData\\Local\\Microsoft\\WindowsApps;C:\\Users\\David\\AppData\\Local\\GitHubDesktop\\bin;C:\\Users\\David\\AppData\\Local\\Programs\\Microsoft VS Code\\bin;C:\\Program Files (x86)\\Common Files\\Oracle\\Java\\javapath;C:\\WINDOWS\\system32;C:\\WINDOWS;C:\\WINDOWS\\System32\\Wbem;C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\;C:\\WINDOWS\\System32\\OpenSSH\\;C:\\Program Files\\NVIDIA Corporation\\NVIDIA NvDLISR;C:\\Program Files (x86)\\NVIDIA Corporation\\PhysX\\Common;C:\\Users\\David\\AppData\\Local\\Microsoft\\WindowsApps;C:\\Users\\David\\AppData\\Local\\GitHubDesktop\\bin;C:\\Users\\David\\AppData\\Local\\Programs\\Microsoft VS Code\\bin",
+			"PLATFORMIO_CALLER": "vscode"
+		}
+	}
+}

@@ -1,255 +1,257 @@
-#include <Arduino.h>
-
 /*
-    MIT License
 
-    Copyright (c) 2018, Alexey Dynda
+  UcgLogo.ino
+  
+  Draw the Ucglib Logo
 
-    Permission is hereby granted, free of charge, to any person obtaining a copy
-    of this software and associated documentation files (the "Software"), to deal
-    in the Software without restriction, including without limitation the rights
-    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-    copies of the Software, and to permit persons to whom the Software is
-    furnished to do so, subject to the following conditions:
+  Universal uC Color Graphics Library
+  
+  Copyright (c) 2014, olikraus@gmail.com
+  All rights reserved.
 
-    The above copyright notice and this permission notice shall be included in all
-    copies or substantial portions of the Software.
+  Redistribution and use in source and binary forms, with or without modification, 
+  are permitted provided that the following conditions are met:
 
-    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-    SOFTWARE.
+  * Redistributions of source code must retain the above copyright notice, this list 
+    of conditions and the following disclaimer.
+    
+  * Redistributions in binary form must reproduce the above copyright notice, this 
+    list of conditions and the following disclaimer in the documentation and/or other 
+    materials provided with the distribution.
+
+  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND 
+  CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, 
+  INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF 
+  MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE 
+  DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR 
+  CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, 
+  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT 
+  NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; 
+  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER 
+  CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, 
+  STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
+  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
+  ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.  
+  
 */
-/**
- *   Nano/Atmega328 PINS: connect LCD to D5 (D/C), D4 (CS), D3 (RES), D11(DIN), D13(CLK)
- *   Attiny SPI PINS:     connect LCD to D4 (D/C), GND (CS), D3 (RES), D1(DIN), D2(CLK)
- *   ESP8266: connect LCD to D1(D/C), D2(CS), RX(RES), D7(DIN), D5(CLK)
- */
-
-/* !!! THIS DEMO RUNS in FULL COLOR MODE */
 
 #include <SPI.h>
-#include <Wire.h>
-#include "ssd1306.h"
-#include "nano_engine.h"
-#include "sova.h"
+#include "Ucglib.h"
 
 /*
- * Heart image below is defined directly in flash memory.
- * This reduces SRAM consumption.
- * The image is defined from bottom to top (bits), from left to
- * right (bytes).
- */
-const PROGMEM uint8_t heartImage[8] =
+  Hardware SPI Pins:
+    Arduino Uno		sclk=13, data=11
+    Arduino Due		sclk=76, data=75
+    Arduino Mega	sclk=52, data=51
+    
+  >>> Please uncomment (and update) one of the following constructors. <<<  
+*/
+//Ucglib8BitPortD ucg(ucg_dev_ili9325_18x240x320_itdb02, ucg_ext_ili9325_18, /* wr= */ 18 , /* cd= */ 19 , /* cs= */ 17, /* reset= */ 16 );
+//Ucglib8Bit ucg(ucg_dev_ili9325_18x240x320_itdb02, ucg_ext_ili9325_18, 0, 1, 2, 3, 4, 5, 6, 7, /* wr= */ 18 , /* cd= */ 19 , /* cs= */ 17, /* reset= */ 16 );
+
+//Ucglib4WireSWSPI ucg(ucg_dev_ili9325_18x240x320_itdb02, ucg_ext_ili9325_18, /*sclk=*/ 13, /*data=*/ 11, /*cd=*/ 9 , /*cs=*/ 10, /*reset=*/ 8);	// not working
+//Ucglib4WireSWSPI ucg(ucg_dev_ili9325_spi_18x240x320, ucg_ext_ili9325_spi_18, /*sclk=*/ 13, /*data=*/ 11, /*cd=*/ 9 , /*cs=*/ 10, /*reset=*/ 8);	// not working
+//Ucglib3WireILI9325SWSPI ucg(ucg_dev_ili9325_spi_18x240x320, ucg_ext_ili9325_spi_18, /*sclk=*/ 13, /*data=*/ 11, /*cs=*/ 10, /*reset=*/ 8);	// not working
+//Ucglib3WireILI9325SWSPI ucg(ucg_dev_ili9325_18x240x320_itdb02, ucg_ext_ili9325_18, /*sclk=*/ 13, /*data=*/ 11, /*cs=*/ 10, /*reset=*/ 8);	// not working
+
+//Ucglib_ST7735_18x128x160_SWSPI ucg(/*sclk=*/ 13, /*data=*/ 11, /*cd=*/ 9, /*cs=*/ 10, /*reset=*/ 8);
+//Ucglib_ST7735_18x128x160_HWSPI ucg(/*cd=*/ 9, /*cs=*/ 10, /*reset=*/ 8);
+
+//Ucglib_ILI9163_18x128x128_SWSPI ucg(/*sclk=*/ 7, /*data=*/ 6, /*cd=*/ 5, /*cs=*/ 3, /*reset=*/ 4);
+//Ucglib_ILI9163_18x128x128_HWSPI ucg(/*cd=*/ 9, /*cs=*/ 10, /*reset=*/ 8);	/* HW SPI Adapter */
+
+//Ucglib_ILI9341_18x240x320_SWSPI ucg(/*sclk=*/ 7, /*data=*/ 6, /*cd=*/ 5, /*cs=*/ 3, /*reset=*/ 4);
+//Ucglib_ILI9341_18x240x320_SWSPI ucg(/*sclk=*/ 13, /*data=*/ 11, /*cd=*/ 9, /*cs=*/ 10, /*reset=*/ 8);
+//Ucglib_ILI9341_18x240x320_HWSPI ucg(/*cd=*/ 9, /*cs=*/ 10, /*reset=*/ 8);
+//Ucglib_ILI9341_18x240x320_SWSPI ucg(/*sclk=*/ 4, /*data=*/ 3, /*cd=*/ 6, /*cs=*/ 7, /*reset=*/ 5);	/* Elec Freaks Shield */
+
+//Ucglib_HX8352C_18x240x400_SWSPI ucg(/*sclk=*/ 7, /*data=*/ 6, /*cd=*/ 5, /*cs=*/ 3, /*reset=*/ 4);
+//Ucglib_HX8352C_18x240x400_HWSPI ucg(/*cd=*/ 9, /*cs=*/ 10, /*reset=*/ 8);
+
+//Ucglib_ILI9486_18x320x480_SWSPI ucg(/*sclk=*/ 7, /*data=*/ 6, /*cd=*/ 5, /*cs=*/ 3, /*reset=*/ 4);
+//Ucglib_ILI9486_18x320x480_HWSPI ucg(/*cd=*/ 9, /*cs=*/ 10, /*reset=*/ 8);
+
+//Ucglib_SSD1351_18x128x128_SWSPI ucg(/*sclk=*/ 13, /*data=*/ 11, /*cd=*/ 9, /*cs=*/ 10, /*reset=*/ 8);
+//Ucglib_SSD1351_18x128x128_HWSPI ucg(/*cd=*/ 9, /*cs=*/ 10, /*reset=*/ 8);
+//Ucglib_SSD1351_18x128x128_FT_SWSPI ucg(/*sclk=*/ 13, /*data=*/ 11, /*cd=*/ 9, /*cs=*/ 10, /*reset=*/ 8);
+//Ucglib_SSD1351_18x128x128_FT_HWSPI ucg(/*cd=*/ 9, /*cs=*/ 10, /*reset=*/ 8);
+
+//Ucglib_PCF8833_16x132x132_SWSPI ucg(/*sclk=*/ 13, /*data=*/ 11, /*cs=*/ 9, /*reset=*/ 8);	/* linksprite board */
+//Ucglib_PCF8833_16x132x132_HWSPI ucg(/*cs=*/ 9, /*reset=*/ 8);	/* linksprite board */
+
+//Ucglib_LD50T6160_18x160x128_6Bit ucg( /*d0 =*/ d0, /*d1 =*/ d1, /*d2 =*/ d2, /*d3 =*/ d3, /*d4 =*/ d4, /*d5 =*/ d5, /*wr=*/ wr, /*cd=*/ cd, /*cs=*/ cs, /*reset=*/ reset);
+//Ucglib_LD50T6160_18x160x128_6Bit ucg( /*d0 =*/ 16, /*d1 =*/ 17, /*d2 =*/ 18, /*d3 =*/ 19, /*d4 =*/ 20, /*d5 =*/ 21, /*wr=*/ 14, /*cd=*/ 15); /* Samsung 160x128 OLED with 6Bit minimal interface with Due */
+//Ucglib_LD50T6160_18x160x128_6Bit ucg( /*d0 =*/ 5, /*d1 =*/ 4, /*d2 =*/ 3, /*d3 =*/ 2, /*d4 =*/ 1, /*d5 =*/ 0, /*wr=*/ 7, /*cd=*/ 6); /* Samsung 160x128 OLED with 6Bit minimal interface with Uno */
+
+//Ucglib_SSD1331_18x96x64_UNIVISION_SWSPI ucg(/*sclk=*/ 13, /*data=*/ 11, /*cd=*/ 9, /*cs=*/ 10, /*reset=*/ 8);
+Ucglib_SSD1331_18x96x64_UNIVISION_HWSPI ucg(/*cd=*/ 21, /*cs=*/ 5, /*reset=*/ 22);
+
+//Ucglib_SEPS225_16x128x128_UNIVISION_SWSPI ucg(/*sclk=*/ 13, /*data=*/ 11, /*cd=*/ 9, /*cs=*/ 10, /*reset=*/ 8);
+//Ucglib_SEPS225_16x128x128_UNIVISION_HWSPI ucg(/*cd=*/ 9, /*cs=*/ 10, /*reset=*/ 8);
+
+
+void upper_pin(ucg_t *ucg, ucg_int_t x, ucg_int_t y)
 {
-    0B00001110,
-    0B00011111,
-    0B00111111,
-    0B01111110,
-    0B01111110,
-    0B00111101,
-    0B00011001,
-    0B00001110
-};
+  ucg_int_t w = 7;
+  ucg_int_t h = 6;
+  ucg_SetColor(ucg, 0, 212, 212, 212);
+  ucg_SetColor(ucg, 1, 200, 200, 200);
+  ucg_SetColor(ucg, 2, 200, 200, 200);
+  ucg_SetColor(ucg, 3, 188, 188, 188);
+  ucg_DrawGradientBox(ucg, x, y, w, h);
 
-const PROGMEM uint8_t heartImage8[ 8 * 8 ] =
-{
-    0x00, 0xE0, 0xE0, 0x00, 0x00, 0xE5, 0xE5, 0x00,
-    0xE0, 0xC0, 0xE0, 0xE0, 0xE0, 0xEC, 0xEC, 0xE5,
-    0xC0, 0xE0, 0xE0, 0xE0, 0xE0, 0xE5, 0xEC, 0xE5,
-    0x80, 0xC0, 0xE0, 0xE0, 0xE0, 0xE0, 0xE5, 0xE0,
-    0x00, 0x80, 0xC0, 0xE0, 0xE0, 0xE0, 0xE0, 0x00,
-    0x00, 0x00, 0x80, 0xE0, 0xE0, 0xE0, 0x00, 0x00,
-    0x00, 0x00, 0x00, 0x80, 0xE0, 0x00, 0x00, 0x00,
-    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-};
-
-/*
- * Define sprite width. The width can be of any size.
- * But sprite height is always assumed to be 8 pixels
- * (number of bits in single byte).
- */
-
-SAppMenu menu;
-
-const char *menuItems[] =
-{
-    "draw bitmap",
-    "sprites",
-    "fonts",
-    "nano canvas",
-    "draw lines",
-};
-
-uint8_t rotation = 0;
-
-static void bitmapDemo()
-{
-    ssd1306_setColor(RGB_COLOR8(64,64,255));
-    if ( rotation & 1 )
-        ssd1306_drawMonoBitmap8(0, 0, 64, 64, Owl_64x64);
-    else
-        ssd1306_drawMonoBitmap8(0, 0, 96, 64, Owl);
-    ssd1306_drawBitmap8(0, 0, 8, 8, heartImage8);
-    ssd1306_setColor(RGB_COLOR8(255,64,64));
-    ssd1306_drawMonoBitmap8(0, 16, 8, 8, heartImage);
-    delay(3000);
+  //ucg_DrawVLine(ucg, x+w, y+1, len);
+  ucg_SetColor(ucg, 0, 220, 220, 220);
+  ucg_SetColor(ucg, 1, 232, 232, 232);
+  ucg_DrawGradientLine(ucg, x+w, y, h, 1);
 }
 
-/* Sprites are not implemented for color modes.
- * But there is NanoEngine support
- * To make example clear, we use lambda as function pointer. Since lambda can be
- * passed to function only if it doesn't capture, all variables should be global.
- * Refer to C++ documentation.
- */
-NanoPoint sprite;
-NanoEngine8 engine;
-static void spriteDemo()
+void lower_pin(ucg_t *ucg, ucg_int_t x, ucg_int_t y)
 {
-    // We not need to clear screen, engine will do it for us
-    engine.begin();
-    // Force engine to refresh the screen
-    engine.refresh();
-    // Set function to draw our sprite
-    engine.drawCallback( []()->bool {
-        engine.canvas.clear();
-        engine.canvas.setColor( RGB_COLOR8(255, 32, 32) );
-        engine.canvas.drawBitmap1( sprite.x, sprite.y, 8, 8, heartImage );
-        return true;
-    } );
-    sprite.x = 0;
-    sprite.y = 0;
-    for (int i=0; i<250; i++)
-    {
-        delay(15);
-        // Tell the engine to refresh screen at old sprite position
-        engine.refresh( sprite.x, sprite.y, sprite.x + 8 - 1, sprite.y + 8 - 1 );
-        sprite.x++;
-        if (sprite.x >= ssd1306_displayWidth())
-        {
-            sprite.x = 0;
-        }
-        sprite.y++;
-        if (sprite.y >= ssd1306_displayHeight())
-        {
-            sprite.y = 0;
-        }
-        // Tell the engine to refresh screen at new sprite position
-        engine.refresh( sprite.x, sprite.y, sprite.x + 8 - 1, sprite.y + 8 - 1 );
-        // Do refresh required parts of screen
-        engine.display();
-    }
+  ucg_int_t w = 7;
+  ucg_int_t h = 5;
+  ucg_SetColor(ucg, 0, 212, 212, 212);
+  ucg_SetColor(ucg, 1, 200, 200, 200);
+  ucg_SetColor(ucg, 2, 200, 200, 200);
+  ucg_SetColor(ucg, 3, 188, 188, 188);
+  ucg_DrawGradientBox(ucg, x, y, w, h);
+
+  //ucg_DrawVLine(ucg, x+w, y+1, len);
+  ucg_SetColor(ucg, 0, 220, 220, 220);
+  ucg_SetColor(ucg, 1, 232, 232, 232);
+  ucg_DrawGradientLine(ucg, x+w, y, h, 1);
+  ucg_SetColor(ucg, 0, 220, 220, 220);
+  ucg_SetColor(ucg, 1, 232, 232, 232);
+  ucg_DrawGradientLine(ucg, x, y+h, w, 0);
+  ucg_SetColor(ucg, 0, 240, 240, 240);
+  ucg_DrawPixel(ucg, x+w, y+h);
 }
 
-static void textDemo()
+void ic_body(ucg_t *ucg, ucg_int_t x, ucg_int_t y)
 {
-    ssd1306_clearScreen8();
-    ssd1306_setFixedFont(digital_font5x7);
-    ssd1306_setColor(RGB_COLOR8(0,64,255));
-    ssd1306_printFixed8(0,  0, "0123456789", STYLE_NORMAL);
-    ssd1306_setFixedFont(ssd1306xled_font6x8);
-    ssd1306_setColor(RGB_COLOR8(255,255,0));
-    ssd1306_printFixed8(0,  8, "Normal text", STYLE_NORMAL);
-    ssd1306_setColor(RGB_COLOR8(0,255,0));
-    ssd1306_printFixed8(0, 16, "Bold text?", STYLE_BOLD);
-    ssd1306_setColor(RGB_COLOR8(0,255,255));
-    ssd1306_printFixed8(0, 24, "Italic text?", STYLE_ITALIC);
-    ssd1306_negativeMode();
-    ssd1306_setColor(RGB_COLOR8(255,255,255));
-    ssd1306_printFixed8(0, 32, "Inverted bold?", STYLE_BOLD);
-    ssd1306_positiveMode();
-    delay(3000);
+  ucg_int_t w = 4*14+4;
+  ucg_int_t h = 31;
+  ucg_SetColor(ucg, 0, 60, 60, 60);
+  ucg_SetColor(ucg, 1, 40, 40, 40);
+  ucg_SetColor(ucg, 2, 48, 48, 48);
+  ucg_SetColor(ucg, 3, 30, 30, 30);
+  ucg_DrawGradientBox(ucg, x, y, w, h);
+  
+  ucg_SetColor(ucg, 0, 255, 168, 0);
+  //ucg_SetColor(ucg, 0, 225, 168, 30);
+  ucg_DrawDisc(ucg, x+w-1, y+h/2-1, 7, UCG_DRAW_UPPER_LEFT|UCG_DRAW_LOWER_LEFT);
+
+  ucg_SetColor(ucg, 0, 60, 30, 0);
+  //ucg_DrawDisc(ucg, x+w-1, y+h/2+1, 7, UCG_DRAW_UPPER_LEFT|UCG_DRAW_LOWER_LEFT);
+
+  ucg_SetColor(ucg, 0, 50, 50, 50);
+  ucg_SetColor(ucg, 0, 25, 25, 25);
+  ucg_DrawDisc(ucg, x+w-1, y+h/2+1, 7, UCG_DRAW_UPPER_LEFT|UCG_DRAW_LOWER_LEFT);
+  
+  
 }
 
-static void canvasDemo()
+
+void draw_ucg_logo(ucg_t *ucg)
 {
-    uint8_t buffer[64*16/8];
-    NanoCanvas1_8 canvas(64,16, buffer);
-    ssd1306_setColor(RGB_COLOR8(0,255,0));
-    ssd1306_setFixedFont(ssd1306xled_font6x8);
-    ssd1306_clearScreen8();
-    canvas.clear();
-    canvas.fillRect(10, 3, 80, 5);
-    canvas.blt((ssd1306_displayWidth()-64)/2, 1);
-    delay(500);
-    canvas.fillRect(50, 1, 60, 15);
-    canvas.blt((ssd1306_displayWidth()-64)/2, 1);
-    delay(1500);
-    canvas.printFixed(20, 1, " DEMO ", STYLE_BOLD );
-    canvas.blt((ssd1306_displayWidth()-64)/2, 1);
-    delay(3000);
+  ucg_int_t a,b;
+  
+  //ucg_Init(ucg, ucg_sdl_dev_cb, ucg_ext_none, (ucg_com_fnptr)0);
+  ucg_SetFont(ucg, ucg_font_ncenB24_tr);  
+  
+  //ucg_SetRotate270(ucg);  
+  //ucg_SetClipRange(ucg, 10,5,40,20);
+
+
+  
+  a = 2;
+  b = 3;
+  
+  ucg_SetColor(ucg, 0, 135*a/b,206*a/b,250*a/b);
+  ucg_SetColor(ucg, 1, 176*a/b,226*a/b,255*a/b);
+  ucg_SetColor(ucg, 2, 25*a/b,25*a/b,112*a/b);
+  ucg_SetColor(ucg, 3, 	85*a/b,26*a/b,139*a/b);
+  ucg_DrawGradientBox(ucg, 0, 0, ucg_GetWidth(ucg)/4, ucg_GetHeight(ucg));
+
+  ucg_SetColor(ucg, 1, 135*a/b,206*a/b,250*a/b);
+  ucg_SetColor(ucg, 0, 176*a/b,226*a/b,255*a/b);
+  ucg_SetColor(ucg, 3, 25*a/b,25*a/b,112*a/b);
+  ucg_SetColor(ucg, 2, 	85*a/b,26*a/b,139*a/b);
+  ucg_DrawGradientBox(ucg, ucg_GetWidth(ucg)/4, 0, ucg_GetWidth(ucg)/4, ucg_GetHeight(ucg));
+
+  ucg_SetColor(ucg, 0, 135*a/b,206*a/b,250*a/b);
+  ucg_SetColor(ucg, 1, 176*a/b,226*a/b,255*a/b);
+  ucg_SetColor(ucg, 2, 25*a/b,25*a/b,112*a/b);
+  ucg_SetColor(ucg, 3, 	85*a/b,26*a/b,139*a/b);
+  ucg_DrawGradientBox(ucg, ucg_GetWidth(ucg)*2/4, 0, ucg_GetWidth(ucg)/4, ucg_GetHeight(ucg));
+
+  ucg_SetColor(ucg, 1, 135*a/b,206*a/b,250*a/b);
+  ucg_SetColor(ucg, 0, 176*a/b,226*a/b,255*a/b);
+  ucg_SetColor(ucg, 3, 25*a/b,25*a/b,112*a/b);
+  ucg_SetColor(ucg, 2, 	85*a/b,26*a/b,139*a/b);
+  ucg_DrawGradientBox(ucg, ucg_GetWidth(ucg)*3/4, 0, ucg_GetWidth(ucg)/4, ucg_GetHeight(ucg));
+  
+  
+  upper_pin(ucg, 7+0*14, 4);
+  upper_pin(ucg, 7+1*14, 4);
+  upper_pin(ucg, 7+2*14, 4);
+  upper_pin(ucg, 7+3*14, 4);
+  
+  ic_body(ucg, 2, 10);
+
+  lower_pin(ucg, 7+0*14, 41);
+  lower_pin(ucg, 7+1*14, 41);
+  lower_pin(ucg, 7+2*14, 41);
+  lower_pin(ucg, 7+3*14, 41);
+
+  ucg_SetColor(ucg, 0, 135*a/b, 206*a/b, 250*a/b);
+  ucg_DrawString(ucg, 63+1, 33+1, 0, "glib");
+
+  ucg_SetColor(ucg, 0, 255, 168, 0);
+  ucg_DrawGlyph(ucg, 26, 38, 0, 'U');
+  ucg_DrawString(ucg, 63, 33, 0, "glib");
+
+  ucg_SetColor(ucg, 0, 135*a/b, 206*a/b, 250*a/b);
+  ucg_SetColor(ucg, 1, 135*a/b, 206*a/b, 250*a/b);
+  ucg_SetColor(ucg, 2, 135*a/b, 206*a/b, 250*a/b);
+  ucg_SetColor(ucg, 3, 135*a/b, 206*a/b, 250*a/b);
+  ucg_DrawGradientBox(ucg, 84+1, 42+1-6, 42, 4);
+
+  ucg_SetColor(ucg, 0, 255, 180, 40);
+  ucg_SetColor(ucg, 1, 235, 148, 0);
+  //ucg_DrawGradientLine(ucg, 79, 42, 20, 0);
+  ucg_SetColor(ucg, 2, 245, 158, 0);
+  ucg_SetColor(ucg, 3, 220, 138, 0);
+  ucg_DrawGradientBox(ucg, 84, 42-6, 42, 4);
+
+  ucg_SetColor(ucg, 0, 255, 168, 0);
+  //ucg_SetFont(ucg, ucg_font_5x8_tr);
+  ucg_SetFont(ucg, ucg_font_7x13B_tr);
+  //ucg_SetFont(ucg, ucg_font_courB08_tr);
+  //ucg_SetFont(ucg, ucg_font_timR08_tr);
+  ucg_DrawString(ucg, 2, 54+5, 0, "http://github.com");
+  ucg_DrawString(ucg, 2, 61+10, 0, "/olikraus/ucglib");
+  //ucg_DrawString(ucg, 1, 61, 0, "code.google.com/p/ucglib/");
+  
+
+
 }
 
-static void drawLinesDemo()
+
+
+void setup(void)
 {
-    /* SSD1331 controller has hardware acceleration, thus                *
-     * use hw ssd1331_drawLine() instead of software ssd1331_drawLine8() */
-    ssd1306_clearScreen();
-    for (uint8_t y = 0; y < ssd1306_displayHeight(); y += 8)
-    {
-        ssd1331_drawLine(0,0, ssd1306_displayWidth() -1, y, RGB_COLOR8(0,255,0));
-    }
-    for (uint8_t x = ssd1306_displayWidth() - 1; x > 7; x -= 8)
-    {
-        ssd1331_drawLine(0,0, x, ssd1306_displayHeight() - 1, RGB_COLOR8(0,0,255));
-    }
-    delay(3000);
+  delay(1000);
+  ucg.begin(UCG_FONT_MODE_TRANSPARENT);
+  ucg.clearScreen();
 }
 
-void setup()
+
+
+void loop(void)
 {
-    ssd1306_setFixedFont(ssd1306xled_font6x8);
-//    ssd1331_96x64_spi_init(3, 4, 5);  // Use this line for Atmega328p
-//    ssd1331_96x64_spi_init(3, -1, 4); // Use this line for ATTINY
-//    ssd1331_96x64_spi_init(24, 0, 23); // Use this line for Raspberry  (gpio24=RST, 0=CE, gpio23=D/C)
-    ssd1331_96x64_spi_init(22, 5, 21); // Use this line for ESP32 (VSPI)  (gpio22=RST, gpio5=CE for VSPI, gpio21=D/C)
-
-    // RGB functions do not work in default SSD1306 compatible mode
-    ssd1306_setMode( LCD_MODE_NORMAL );
-    ssd1306_fillScreen8( 0x00 );
-    ssd1306_createMenu( &menu, menuItems, sizeof(menuItems) / sizeof(char *) );
-    ssd1306_showMenu8( &menu );
-}
-
-void loop()
-{
-    delay(1000);
-    switch (ssd1306_menuSelection(&menu))
-    {
-        case 0:
-            bitmapDemo();
-            break;
-
-        case 1:
-            spriteDemo();
-            break;
-
-        case 2:
-            textDemo();
-            break;
-
-        case 3:
-            canvasDemo();
-            break;
-
-        case 4:
-            drawLinesDemo();
-            break;
-
-        default:
-            break;
-    }
-    if ((menu.count - 1) == ssd1306_menuSelection(&menu))
-    {
-         ssd1331_setRotation((rotation) & 0x03);
-    }
-    ssd1306_fillScreen8( 0x00 );
-    ssd1306_setColor(RGB_COLOR8(255,255,255));
-    ssd1306_showMenu8(&menu);
-    delay(500);
-    ssd1306_menuDown(&menu);
-    ssd1306_updateMenu8(&menu);
+  ucg.setRotate90();
+  draw_ucg_logo(ucg.getUcg());
+  for(;;)
+    ;
 }
