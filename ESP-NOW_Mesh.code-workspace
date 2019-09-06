@@ -17,30 +17,53 @@
 			"path": "ESP32_OLED_Demo"
 		},
 		{
-			"name": "ESP32-NOW_Master",
-			"path": "ESP32-NOW_Master"
+			"path": "ESP32-NOW_OLED_DHT_Master"
 		},
 		{
-			"name": "ESP32-NOW_Slave",
-			"path": "ESP32-NOW_Slave"
+			"path": "ESP32-NOW_OLED_Log_Slave"
 		},
 		{
-			"name": "ESP32-NOW_Fast_Master",
-			"path": "ESP32-NOW_Fast_Master"
+			"path": "ESP32-NOW_Test_Slave"
 		},
 		{
-			"name": "ESP32-NOW_DHT_Master",
-			"path": "ESP32-NOW_DHT_Master"
+			"path": "ESP32-NOW_Test_Master"
 		},
 		{
-			"name": "ESP32-NOW_UCG_Log_Slave",
-			"path": "ESP32-NOW_UCG_Log_Slave"
+			"path": "ESP32-NOW_Test_Mirror"
+		},
+		{
+			"path": "ESP32-NOW_OLED_Mirror"
+		},
+		{
+			"path": "ESP32-MESH_Demo"
+		},
+		{
+			"path": "ESP32_WiFi_Server"
+		},
+		{
+			"path": "ESP32_MESH_Server"
+		},
+		{
+			"path": "ESP32-NOW_OLED_Receiver"
+		},
+		{
+			"path": "ESP32-NOW_OLED_Controller"
 		}
 	],
 	"settings": {
 		"terminal.integrated.env.windows": {
-			"PATH": "C:\\Users\\David\\.platformio\\penv\\Scripts;C:\\Users\\David\\.platformio\\penv;C:\\Program Files (x86)\\Common Files\\Oracle\\Java\\javapath;C:\\WINDOWS\\system32;C:\\WINDOWS;C:\\WINDOWS\\System32\\Wbem;C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\;C:\\WINDOWS\\System32\\OpenSSH\\;C:\\Program Files\\NVIDIA Corporation\\NVIDIA NvDLISR;C:\\Program Files (x86)\\NVIDIA Corporation\\PhysX\\Common;C:\\Users\\David\\AppData\\Local\\Microsoft\\WindowsApps;C:\\Users\\David\\AppData\\Local\\GitHubDesktop\\bin;C:\\Users\\David\\AppData\\Local\\Programs\\Microsoft VS Code\\bin;C:\\Program Files (x86)\\Common Files\\Oracle\\Java\\javapath;C:\\WINDOWS\\system32;C:\\WINDOWS;C:\\WINDOWS\\System32\\Wbem;C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\;C:\\WINDOWS\\System32\\OpenSSH\\;C:\\Program Files\\NVIDIA Corporation\\NVIDIA NvDLISR;C:\\Program Files (x86)\\NVIDIA Corporation\\PhysX\\Common;C:\\Users\\David\\AppData\\Local\\Microsoft\\WindowsApps;C:\\Users\\David\\AppData\\Local\\GitHubDesktop\\bin;C:\\Users\\David\\AppData\\Local\\Programs\\Microsoft VS Code\\bin",
+			"PATH": "C:\\Users\\David\\.platformio\\penv\\Scripts;C:\\Users\\David\\.platformio\\penv;C:\\Program Files (x86)\\Common Files\\Oracle\\Java\\javapath;C:\\WINDOWS\\system32;C:\\WINDOWS;C:\\WINDOWS\\System32\\Wbem;C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\;C:\\WINDOWS\\System32\\OpenSSH\\;C:\\Program Files\\NVIDIA Corporation\\NVIDIA NvDLISR;C:\\Program Files (x86)\\NVIDIA Corporation\\PhysX\\Common;C:\\Program Files\\Git\\cmd;C:\\Users\\David\\AppData\\Local\\Programs\\Python\\Python37\\Scripts\\;C:\\Users\\David\\AppData\\Local\\Programs\\Python\\Python37\\;C:\\Users\\David\\AppData\\Local\\Microsoft\\WindowsApps;C:\\Users\\David\\AppData\\Local\\GitHubDesktop\\bin;C:\\Users\\David\\AppData\\Local\\Programs\\Microsoft VS Code\\bin;C:\\Program Files (x86)\\Common Files\\Oracle\\Java\\javapath;C:\\WINDOWS\\system32;C:\\WINDOWS;C:\\WINDOWS\\System32\\Wbem;C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\;C:\\WINDOWS\\System32\\OpenSSH\\;C:\\Program Files\\NVIDIA Corporation\\NVIDIA NvDLISR;C:\\Program Files (x86)\\NVIDIA Corporation\\PhysX\\Common;C:\\Program Files\\Git\\cmd;C:\\Users\\David\\AppData\\Local\\Programs\\Python\\Python37\\Scripts\\;C:\\Users\\David\\AppData\\Local\\Programs\\Python\\Python37\\;C:\\Users\\David\\AppData\\Local\\Microsoft\\WindowsApps;C:\\Users\\David\\AppData\\Local\\GitHubDesktop\\bin;C:\\Users\\David\\AppData\\Local\\Programs\\Microsoft VS Code\\bin",
 			"PLATFORMIO_CALLER": "vscode"
+		},
+		"files.associations": {
+			"array": "cpp",
+			"esp_wifi.h": "c",
+			"string.h": "c",
+			"esp_system.h": "c",
+			"esp_log.h": "c",
+			"esp_mesh.h": "c",
+			"esp_mesh_internal.h": "c",
+			"mesh_light.h": "c"
 		}
 	}
 }
