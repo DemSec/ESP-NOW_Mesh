@@ -48,6 +48,9 @@
 		},
 		{
 			"path": "ESP32-NOW_OLED_Controller"
+		},
+		{
+			"path": "ESP32-M5Cam_Demo"
 		}
 	],
 	"settings": {
